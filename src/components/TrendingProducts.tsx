@@ -86,7 +86,7 @@ export default function TrendingProducts() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#080812] px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
+    <section className="relative overflow-hidden bg-[#080812] px-4 py-20 sm:px-6 lg:px-10 lg:py-10">
 
       {/* Background Glow */}
       <div className="pointer-events-none absolute -left-40 top-20 h-80 w-80 rounded-full bg-purple-600/10 blur-[120px]" />
