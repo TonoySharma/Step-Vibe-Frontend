@@ -1,7 +1,12 @@
+import HeroBanner from "@/components/HeroBanner";
+import Marquee from "@/components/Marquee";
+
+
 export default function Home() {
   return (
     <div>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      <HeroBanner></HeroBanner>
+      <Marquee></Marquee>
     </div>
   );
 }

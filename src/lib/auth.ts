@@ -4,11 +4,11 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { jwt } from "better-auth/plugins";
 
 
-const googleClientId = process.env.GOOGLE_CLIENT_ID!;
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET!;
+// const googleClientId = process.env.GOOGLE_CLIENT_ID!;
+// const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET!;
 
 const client = new MongoClient(process.env.MONGODB_URI as string);
-const db = client.db("");
+const db = client.db("Step-Vibe");
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
@@ -19,12 +19,12 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-  socialProviders: {
-    google: {
-      clientId: googleClientId,
-      clientSecret: googleClientSecret,
-    },
-  },
+  // socialProviders: {
+  //   google: {
+  //     clientId: googleClientId,
+  //     clientSecret: googleClientSecret,
+  //   },
+  // },
 
   // user: {
   //   additionalFields: {
