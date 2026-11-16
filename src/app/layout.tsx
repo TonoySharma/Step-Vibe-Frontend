@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavBer from "@/components/NavBer";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import SmoothScroll from "@/components/SmoothScroll";
 
 
 const geistSans = Geist({
@@ -30,8 +31,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <AnnouncementBar></AnnouncementBar>
         <NavBer></NavBer>
-       
+        
+       <SmoothScroll>
         {children}
+        </SmoothScroll>
         
       </body>
     </html>
