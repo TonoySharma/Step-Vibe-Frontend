@@ -280,7 +280,7 @@ export default function NotFound() {
         </p>
 
         <p className="mt-2 text-[10px] text-gray-700">
-          © {new Date().getFullYear()} StrideHub. All rights reserved.
+          © StrideHub. All rights reserved.
         </p>
 
       </motion.div>

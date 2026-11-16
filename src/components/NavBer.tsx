@@ -1,9 +1,10 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
@@ -26,9 +27,9 @@ import {
 const navLinks = [
   { name: "Home", href: "/" },
   { name: "Shop", href: "/shop" },
-  { name: "Men", href: "/shop?gender=men" },
-  { name: "Women", href: "/shop?gender=women" },
-  { name: "Kids", href: "/shop?gender=kids" },
+  { name: "Men", href: "/man?gender=men" },
+  { name: "Women", href: "/woman?gender=women" },
+  { name: "Kids", href: "/kids?gender=kids" },
   { name: "New Arrivals", href: "/shop?sort=newest" },
   { name: "Deals", href: "/shop?collection=deals" },
 ];
@@ -48,9 +49,11 @@ const adminLinks = [
   { name: "Coupons & Deals", href: "/admin/coupons", icon: FaTag },
 ];
 
-const NavBar = () => {
+const NavBarContent = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -79,6 +82,29 @@ const NavBar = () => {
   }, [isMenuOpen]);
 
   const closeMenu = () => setIsMenuOpen(false);
+
+  const isActiveLink = (href: string) => {
+    const [hrefPath, hrefQuery] = href.split("?");
+
+    if (pathname !== hrefPath && !pathname.startsWith(`${hrefPath}/`)) {
+      return false;
+    }
+
+    if (hrefQuery) {
+      const expectedParams = new URLSearchParams(hrefQuery);
+      return Array.from(expectedParams.entries()).every(
+        ([key, value]) => searchParams.get(key) === value,
+      );
+    }
+
+    if (hrefPath === "/shop") {
+      return !["gender", "sort", "collection"].some((key) =>
+        searchParams.has(key),
+      );
+    }
+
+    return true;
+  };
 
   const handleLogout = async () => {
     const { error } = await authClient.signOut();
@@ -135,10 +161,21 @@ const NavBar = () => {
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="group relative block whitespace-nowrap px-3 py-3 text-[13px] font-semibold text-gray-600 no-underline transition-colors duration-200 hover:text-[#f97316]"
+                      aria-current={isActiveLink(link.href) ? "page" : undefined}
+                      className={`group relative block whitespace-nowrap rounded-lg px-3 py-3 text-[13px] font-semibold no-underline transition-colors duration-200 ${
+                        isActiveLink(link.href)
+                          ? "bg-orange-50 text-[#f97316]"
+                          : "text-gray-600 hover:text-[#f97316]"
+                      }`}
                     >
                       {link.name}
-                      <span className="absolute bottom-1 left-3 right-3 h-[2px] origin-left scale-x-0 rounded-full bg-[#f97316] transition-transform duration-300 group-hover:scale-x-100" />
+                      <span
+                        className={`absolute bottom-1 left-3 right-3 h-[2px] origin-left rounded-full bg-[#f97316] transition-transform duration-300 ${
+                          isActiveLink(link.href)
+                            ? "scale-x-100"
+                            : "scale-x-0 group-hover:scale-x-100"
+                        }`}
+                      />
                     </Link>
                   </li>
                 ))}
@@ -252,14 +289,24 @@ const NavBar = () => {
                 <>
                   <Link
                     href="/login"
-                    className="rounded-full px-4 py-2.5 text-sm font-bold text-gray-700 no-underline transition-colors hover:text-[#f97316]"
+                    aria-current={isActiveLink("/login") ? "page" : undefined}
+                    className={`rounded-full px-4 py-2.5 text-sm font-bold no-underline transition-colors hover:text-[#f97316] ${
+                      isActiveLink("/login")
+                        ? "bg-orange-50 text-[#f97316]"
+                        : "text-gray-700"
+                    }`}
                   >
                     Log In
                   </Link>
 
                   <Link
                     href="/signUp"
-                    className="group flex items-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-sm font-bold text-white no-underline shadow-lg shadow-gray-200 transition-all duration-300 hover:bg-[#f97316] hover:shadow-orange-200"
+                    aria-current={isActiveLink("/signUp") ? "page" : undefined}
+                    className={`group flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold no-underline shadow-lg shadow-gray-200 transition-all duration-300 hover:bg-[#f97316] hover:shadow-orange-200 ${
+                      isActiveLink("/signUp")
+                        ? "bg-[#f97316] text-white"
+                        : "bg-[#171717] text-white"
+                    }`}
                   >
                     Get Started
                     <FaArrowRight className="text-xs transition-transform group-hover:translate-x-1" />
@@ -367,10 +414,19 @@ const NavBar = () => {
                   key={link.name}
                   href={link.href}
                   onClick={closeMenu}
-                  className="flex items-center justify-between rounded-xl px-3 py-3.5 text-sm font-semibold text-gray-700 no-underline transition-all hover:bg-orange-50 hover:text-[#f97316]"
+                  aria-current={isActiveLink(link.href) ? "page" : undefined}
+                  className={`flex items-center justify-between rounded-xl px-3 py-3.5 text-sm font-semibold no-underline transition-all ${
+                    isActiveLink(link.href)
+                      ? "bg-orange-50 text-[#f97316]"
+                      : "text-gray-700 hover:bg-orange-50 hover:text-[#f97316]"
+                  }`}
                 >
                   {link.name}
-                  <FaArrowRight className="text-[10px] text-gray-300" />
+                  <FaArrowRight
+                    className={`text-[10px] ${
+                      isActiveLink(link.href) ? "text-[#f97316]" : "text-gray-300"
+                    }`}
+                  />
                 </Link>
               ))}
             </div>
@@ -451,7 +507,12 @@ const NavBar = () => {
                 <Link
                   href="/login"
                   onClick={closeMenu}
-                  className="rounded-xl border border-gray-200 px-4 py-3 text-center text-sm font-bold text-gray-800 no-underline transition-colors hover:bg-gray-50"
+                  aria-current={isActiveLink("/login") ? "page" : undefined}
+                  className={`rounded-xl border px-4 py-3 text-center text-sm font-bold no-underline transition-colors ${
+                    isActiveLink("/login")
+                      ? "border-orange-200 bg-orange-50 text-[#f97316]"
+                      : "border-gray-200 text-gray-800 hover:bg-gray-50"
+                  }`}
                 >
                   Log In
                 </Link>
@@ -459,7 +520,10 @@ const NavBar = () => {
                 <Link
                   href="/signUp"
                   onClick={closeMenu}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-[#171717] px-3 py-3 text-sm font-bold text-white no-underline transition-colors hover:bg-[#f97316]"
+                  aria-current={isActiveLink("/signUp") ? "page" : undefined}
+                  className={`flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-white no-underline transition-colors hover:bg-[#f97316] ${
+                    isActiveLink("/signUp") ? "bg-[#f97316]" : "bg-[#171717]"
+                  }`}
                 >
                   Sign Up <FaArrowRight className="text-xs" />
                 </Link>
@@ -471,5 +535,15 @@ const NavBar = () => {
     </>
   );
 };
+
+const NavBar = () => (
+  <Suspense
+    fallback={
+      <header className="sticky top-10 z-50 h-[82px] w-full border-b border-gray-100 bg-white" />
+    }
+  >
+    <NavBarContent />
+  </Suspense>
+);
 
 export default NavBar;

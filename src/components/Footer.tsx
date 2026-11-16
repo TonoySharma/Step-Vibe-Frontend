@@ -267,7 +267,7 @@ export default function Footer() {
         <div className="mt-10 flex flex-col items-center justify-between gap-5 border-t border-pink-500/15 py-7 text-center sm:flex-row sm:text-left">
 
           <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} StrideHub. All rights reserved.
+            © StrideHub. All rights reserved.
           </p>
 
           <p className="flex items-center gap-1.5 text-xs text-gray-500">
